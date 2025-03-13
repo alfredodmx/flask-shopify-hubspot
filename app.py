@@ -1,12 +1,17 @@
-﻿from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify
 import requests
 import json
 import os
 
 app = Flask(__name__)
 
-# 🔑 Token de Acceso de HubSpot (REEMPLÁZALO con tu token real)
-HUBSPOT_ACCESS_TOKEN = "tu_token_hubspot"
+# 🔑 Obtener API Key de HubSpot desde variable de entorno
+HUBSPOT_ACCESS_TOKEN = os.getenv("HUBSPOT_ACCESS_TOKEN")
+
+if not HUBSPOT_ACCESS_TOKEN:
+    print("❌ ERROR: La API Key de HubSpot no está configurada. Asegúrate de definir la variable de entorno 'HUBSPOT_ACCESS_TOKEN'.")
+    exit(1)  # Sale de la aplicación si no hay API Key
+
 HUBSPOT_API_URL = "https://api.hubapi.com/crm/v3/objects/contacts"
 
 # 📩 Ruta del webhook que Shopify enviará a esta API
@@ -47,7 +52,7 @@ def receive_webhook():
     else:
         return jsonify({"error": "No se pudo crear el contacto en HubSpot", "details": response.text}), 400
 
-# 🔥 Iniciar el servidor en Railway
+# 🔥 Iniciar el servidor en Railway o Render
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
