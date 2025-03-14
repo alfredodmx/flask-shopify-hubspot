@@ -7,12 +7,12 @@ app = Flask(__name__)
 
 # 🔑 Obtener API Key de HubSpot y Shopify desde variables de entorno
 HUBSPOT_ACCESS_TOKEN = os.getenv("HUBSPOT_ACCESS_TOKEN")
-SHOPIFY_ACCESS_TOKEN = os.getenv("SHOPIFY_ACCESS_TOKEN")  # Agrega tu Access Token de Shopify
-SHOPIFY_STORE = "uaua8v-s7.myshopify.com"  # Reemplaza con tu tienda Shopify
+SHOPIFY_ACCESS_TOKEN = os.getenv("SHOPIFY_ACCESS_TOKEN")  # Agrega la API Key de Shopify
+SHOPIFY_STORE = "uaua8v-s7.myshopify.com"  # Reemplaza con el dominio de tu tienda Shopify
 
 if not HUBSPOT_ACCESS_TOKEN or not SHOPIFY_ACCESS_TOKEN:
     print("❌ ERROR: Las API Keys no están configuradas. Asegúrate de definir 'HUBSPOT_ACCESS_TOKEN' y 'SHOPIFY_ACCESS_TOKEN'.")
-    exit(1)  # Sale de la aplicación si faltan credenciales
+    exit(1)  # Detiene la aplicación si faltan credenciales
 
 HUBSPOT_API_URL = "https://api.hubapi.com/crm/v3/objects/contacts"
 
@@ -40,17 +40,18 @@ def get_customer_metafields(customer_id):
 @app.route('/webhook/shopify', methods=['POST'])
 def receive_webhook():
     data = request.get_json()  # Lee el JSON enviado por Shopify
-    print("📩 Datos recibidos de Shopify:", json.dumps(data, indent=4))
+    print("📩 Webhook recibido de Shopify:", json.dumps(data, indent=4))
 
-    # Extraer información del cliente
-    customer_id = data.get("id")
+    # Extraer información básica del cliente
+    customer_id = data.get("id")  # Necesario para buscar metacampos
     email = data.get("email")
     first_name = data.get("first_name", "")
     last_name = data.get("last_name", "")
     phone = data.get("phone", "")
 
     if not email or not customer_id:
-        return jsonify({"error": "No se recibió un email o ID de cliente válido"}), 400
+        print("❌ ERROR: No se recibió un email o ID de cliente válido.")
+        return jsonify({"error": "Falta email o ID de cliente"}), 400
 
     # 🔍 Obtener los metacampos desde Shopify
     modelo, precio = get_customer_metafields(customer_id)
