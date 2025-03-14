@@ -7,12 +7,12 @@ app = Flask(__name__)
 
 # 🔑 Obtener API Key de HubSpot y Shopify desde variables de entorno
 HUBSPOT_ACCESS_TOKEN = os.getenv("HUBSPOT_ACCESS_TOKEN")
-SHOPIFY_ACCESS_TOKEN = os.getenv("SHOPIFY_ACCESS_TOKEN")  # Agrega la API Key de Shopify
-SHOPIFY_STORE = "uaua8v-s7.myshopify.com"  # Reemplaza con el dominio de tu tienda Shopify
+SHOPIFY_ACCESS_TOKEN = os.getenv("SHOPIFY_ACCESS_TOKEN")  # Agregamos la API Key de Shopify
+SHOPIFY_STORE = "uaua8v-s7.myshopify.com"  # Reemplaza con tu dominio real de Shopify
 
 if not HUBSPOT_ACCESS_TOKEN or not SHOPIFY_ACCESS_TOKEN:
     print("❌ ERROR: Las API Keys no están configuradas. Asegúrate de definir 'HUBSPOT_ACCESS_TOKEN' y 'SHOPIFY_ACCESS_TOKEN'.")
-    exit(1)  # Detiene la aplicación si faltan credenciales
+    exit(1)
 
 HUBSPOT_API_URL = "https://api.hubapi.com/crm/v3/objects/contacts"
 
@@ -42,8 +42,8 @@ def receive_webhook():
     data = request.get_json()  # Lee el JSON enviado por Shopify
     print("📩 Webhook recibido de Shopify:", json.dumps(data, indent=4))
 
-    # Extraer información básica del cliente
-    customer_id = data.get("id")  # Necesario para buscar metacampos
+    # Extraer información básica
+    customer_id = data.get("id")  # Obtener el ID del cliente para buscar metacampos
     email = data.get("email")
     first_name = data.get("first_name", "")
     last_name = data.get("last_name", "")
