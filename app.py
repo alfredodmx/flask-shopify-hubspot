@@ -3,7 +3,6 @@ import requests
 import json
 import os
 
-# 🔥 Inicializar Flask antes de definir cualquier ruta
 app = Flask(__name__)
 
 # 🔑 Obtener API Key de HubSpot y Shopify desde variables de entorno
@@ -53,7 +52,50 @@ def receive_webhook():
 
         print("📩 Webhook recibido de Shopify (JSON):", json.dumps(data, indent=4))
 
-        return jsonify({"message": "Webhook recibido correctamente"}), 200
+        # Extraer información básica
+        customer_id = data.get("id")  # Obtener el ID del cliente para buscar metacampos
+        email = data.get("email")
+        first_name = data.get("first_name", "")
+        last_name = data.get("last_name", "")
+        phone = data.get("phone", "")
+
+        if not email or not customer_id:
+            print("❌ ERROR: No se recibió un email o ID de cliente válido.")
+            return jsonify({"error": "Falta email o ID de cliente"}), 400
+
+        # 🔍 Obtener los metacampos desde Shopify
+        modelo, precio = get_customer_metafields(customer_id)
+
+        # 📌 Crear el contacto con los metacampos incluidos
+        contact_data = {
+            "properties": {
+                "email": email,
+                "firstname": first_name,
+                "lastname": last_name,
+                "phone": phone,
+                "custom_modelo": modelo,
+                "custom_precio": precio
+            }
+        }
+
+        headers = {
+            "Authorization": f"Bearer {HUBSPOT_ACCESS_TOKEN}",
+            "Content-Type": "application/json"
+        }
+
+        # 🚀 Imprimir qué datos se están enviando a HubSpot
+        print("📤 Enviando datos a HubSpot:", json.dumps(contact_data, indent=4))
+
+        # 🚀 Enviar los datos a HubSpot
+        response = requests.post(HUBSPOT_API_URL, json=contact_data, headers=headers)
+
+        # 🔍 Imprimir la respuesta de HubSpot
+        print("🔍 Respuesta de HubSpot:", response.status_code, response.text)
+
+        if response.status_code == 201:
+            return jsonify({"message": "Contacto creado en HubSpot con metacampos"}), 200
+        else:
+            return jsonify({"error": "No se pudo crear el contacto en HubSpot", "details": response.text}), 400
 
     except Exception as e:
         print("❌ ERROR procesando el webhook:", str(e))
