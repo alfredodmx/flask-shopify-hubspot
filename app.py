@@ -31,17 +31,16 @@ def get_customer_metafields(customer_id):
         metafields = response.json().get("metafields", [])
         modelo = next((m["value"] for m in metafields if m["key"] == "modelo"), "Sin modelo")
         precio = next((m["value"] for m in metafields if m["key"] == "precio"), "Sin precio")
-        
-        Describe lo que quieres = next((m["value"] for m in metafields if m["key"] == "describe"), "Sin descripcion")
-        Tengo un plano = next((m["value"] for m in metafields if m["key"] == "plano"), "Sin plano")
-        Tu dirección actual = next((m["value"] for m in metafields if m["key"] == "direccion"), "Sin direccion")
-        Indica tu presupuesto = next((m["value"] for m in metafields if m["key"] == "presupuesto"), "Sin presupuesto")
-        Tipo de persona = next((m["value"] for m in metafields if m["key"] == "persona"), "Sin persona")
+        describe = next((m["value"] for m in metafields if m["key"] == "describe"), "Sin descripcion")  # Corregido
+        plano = next((m["value"] for m in metafields if m["key"] == "plano"), "Sin plano")  # Corregido
+        direccion = next((m["value"] for m in metafields if m["key"] == "direccion"), "Sin direccion")  # Corregido
+        presupuesto = next((m["value"] for m in metafields if m["key"] == "presupuesto"), "Sin presupuesto")  # Corregido
+        persona = next((m["value"] for m in metafields if m["key"] == "persona"), "Sin persona")  # Corregido
         
         return modelo, precio, describe, plano, direccion, presupuesto, persona
     else:
         print("❌ Error obteniendo metacampos de Shopify:", response.text)
-        return "Error", "Error"
+        return "Error", "Error", "Error", "Error", "Error", "Error", "Error"
 
 # 📩 Ruta del webhook que Shopify enviará a esta API
 @app.route('/webhook/shopify', methods=['POST'])
@@ -71,7 +70,7 @@ def receive_webhook():
             return jsonify({"error": "Falta email o ID de cliente"}), 400
 
         # 🔍 Obtener los metacampos desde Shopify
-        modelo, precio = get_customer_metafields(customer_id)
+        modelo, precio, describe, plano, direccion, presupuesto, persona = get_customer_metafields(customer_id)
 
         # 📌 Crear el contacto con los metacampos incluidos
         contact_data = {
