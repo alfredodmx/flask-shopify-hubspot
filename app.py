@@ -73,6 +73,9 @@ def receive_webhook():
         # 🔍 Obtener los metacampos desde Shopify
         modelo, precio, describe, plano, direccion, presupuesto, persona = get_customer_metafields(customer_id)
 
+        # Verificar que los metacampos no estén vacíos
+        print("Valores de metacampos:", modelo, precio, describe, plano, direccion, presupuesto, persona)
+
         # 📌 Crear el contacto con los metacampos incluidos
         contact_data = {
             "properties": {
@@ -80,13 +83,13 @@ def receive_webhook():
                 "firstname": first_name,
                 "lastname": last_name,
                 "phone": phone,
-                "custom_modelo": modelo,
+                "custom_tipo_de_persona": persona,
+                "custom_indica_tu_presupuesto": presupuesto,
+                "custom_tu_direccin_actual": direccion,
+                "custom_tengo_un_plano": plano,  # Si 'plano' es un archivo, asegúrate de enviar la URL del archivo
+                "custom_describe_lo_que_quieres": describe,
                 "custom_precio": precio,
-                "custom_descripcion": describe,
-                "custom_plano": plano,
-                "custom_direccion": direccion,
-                "custom_presupuesto": presupuesto,
-                "custom_persona": persona
+                "custom_modelo": modelo
             }
         }
 
