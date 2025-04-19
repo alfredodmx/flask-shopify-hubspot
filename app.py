@@ -31,7 +31,14 @@ def get_customer_metafields(customer_id):
         metafields = response.json().get("metafields", [])
         modelo = next((m["value"] for m in metafields if m["key"] == "modelo"), "Sin modelo")
         precio = next((m["value"] for m in metafields if m["key"] == "precio"), "Sin precio")
-        return modelo, precio
+        
+        Describe lo que quieres = next((m["value"] for m in metafields if m["key"] == "describe"), "Sin descripcion")
+        Tengo un plano = next((m["value"] for m in metafields if m["key"] == "plano"), "Sin plano")
+        Tu dirección actual = next((m["value"] for m in metafields if m["key"] == "direccion"), "Sin direccion")
+        Indica tu presupuesto = next((m["value"] for m in metafields if m["key"] == "presupuesto"), "Sin presupuesto")
+        Tipo de persona = next((m["value"] for m in metafields if m["key"] == "persona"), "Sin persona")
+        
+        return modelo, precio, describe, plano, direccion, presupuesto, persona
     else:
         print("❌ Error obteniendo metacampos de Shopify:", response.text)
         return "Error", "Error"
@@ -74,7 +81,12 @@ def receive_webhook():
                 "lastname": last_name,
                 "phone": phone,
                 "custom_modelo": modelo,
-                "custom_precio": precio
+                "custom_precio": precio,
+                "custom_descripcion": describe,
+                "custom_plano": plano,
+                "custom_direccion": direccion,
+                "custom_presupuesto": presupuesto,
+                "custom_persona": persona
             }
         }
 
