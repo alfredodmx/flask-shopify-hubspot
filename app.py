@@ -31,13 +31,14 @@ def get_customer_metafields(customer_id):
         metafields = response.json().get("metafields", [])
         modelo = next((m["value"] for m in metafields if m["key"] == "modelo"), "Sin modelo")
         precio = next((m["value"] for m in metafields if m["key"] == "precio"), "Sin precio")
-        describe = next((m["value"] for m in metafields if m["key"] == "describe"), "Sin descripcion")  # Corregido
-        plano = next((m["value"] for m in metafields if m["key"] == "plano"), "Sin plano")  # Corregido
-        direccion = next((m["value"] for m in metafields if m["key"] == "direccion"), "Sin direccion")  # Corregido
-        presupuesto = next((m["value"] for m in metafields if m["key"] == "presupuesto"), "Sin presupuesto")  # Corregido
-        persona = next((m["value"] for m in metafields if m["key"] == "persona"), "Sin persona")  # Corregido
+        describe_lo_que_quieres = next((m["value"] for m in metafields if m["key"] == "describe"), "Sin descripcion")
+        tengo_un_plano = next((m["value"] for m in metafields if m["key"] == "plano"), "Sin plano")
+        tu_direccion_actual = next((m["value"] for m in metafields if m["key"] == "direccion"), "Sin direccion")
+        indica_tu_presupuesto = next((m["value"] for m in metafields if m["key"] == "presupuesto"), "Sin presupuesto")
+        tipo_de_persona = next((m["value"] for m in metafields if m["key"] == "persona"), "Sin persona")
         
-        return modelo, precio, describe, plano, direccion, presupuesto, persona
+        # Corregido: retornar todas las variables necesarias
+        return modelo, precio, describe_lo_que_quieres, tengo_un_plano, tu_direccion_actual, indica_tu_presupuesto, tipo_de_persona
     else:
         print("❌ Error obteniendo metacampos de Shopify:", response.text)
         return "Error", "Error", "Error", "Error", "Error", "Error", "Error"
