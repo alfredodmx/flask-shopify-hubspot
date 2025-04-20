@@ -76,6 +76,10 @@ def receive_webhook():
         # Verificar que los metacampos no estén vacíos
         print("Valores de metacampos:", modelo, precio, describe_lo_que_quieres, tengo_un_plano, tu_direccion_actual, indica_tu_presupuesto, tipo_de_persona)
 
+        # Verificar que la dirección no sea "Sin direccion"
+        if tu_direccion_actual == "Sin direccion":
+            tu_direccion_actual = None  # Dejar el campo vacío si no hay dirección
+
         # 📌 Crear el contacto con los metacampos incluidos
         contact_data = {
             "properties": {
