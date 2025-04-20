@@ -31,11 +31,11 @@ def get_customer_metafields(customer_id):
         metafields = response.json().get("metafields", [])
         modelo = next((m["value"] for m in metafields if m["key"] == "modelo"), "Sin modelo")
         precio = next((m["value"] for m in metafields if m["key"] == "precio"), "Sin precio")
-        describe_lo_que_quieres = next((m["value"] for m in metafields if m["key"] == "describe"), "Sin descripcion")
-        tengo_un_plano = next((m["value"] for m in metafields if m["key"] == "plano"), "Sin plano")
-        tu_direccion_actual = next((m["value"] for m in metafields if m["key"] == "direccion"), "Sin direccion")
-        indica_tu_presupuesto = next((m["value"] for m in metafields if m["key"] == "presupuesto"), "Sin presupuesto")
-        tipo_de_persona = next((m["value"] for m in metafields if m["key"] == "persona"), "Sin persona")
+        describe_lo_que_quieres = next((m["value"] for m in metafields if m["key"] == "describe_lo_que_quieres"), "Sin descripcion")
+        tengo_un_plano = next((m["value"] for m in metafields if m["key"] == "tengo_un_plano"), "Sin plano")
+        tu_direccion_actual = next((m["value"] for m in metafields if m["key"] == "tu_direccion_actual"), "Sin direccion")
+        indica_tu_presupuesto = next((m["value"] for m in metafields if m["key"] == "indica_tu_presupuesto"), "Sin presupuesto")
+        tipo_de_persona = next((m["value"] for m in metafields if m["key"] == "tipo_de_persona"), "Sin persona")
         
         # Corregido: retornar todas las variables necesarias
         return modelo, precio, describe_lo_que_quieres, tengo_un_plano, tu_direccion_actual, indica_tu_presupuesto, tipo_de_persona
@@ -71,10 +71,10 @@ def receive_webhook():
             return jsonify({"error": "Falta email o ID de cliente"}), 400
 
         # 🔍 Obtener los metacampos desde Shopify
-        modelo, precio, describe, plano, direccion, presupuesto, persona = get_customer_metafields(customer_id)
+        modelo, precio, describe_lo_que_quieres, tengo_un_plano, tu_direccion_actual, indica_tu_presupuesto, tipo_de_persona = get_customer_metafields(customer_id)
 
         # Verificar que los metacampos no estén vacíos
-        print("Valores de metacampos:", modelo, precio, describe, plano, direccion, presupuesto, persona)
+        print("Valores de metacampos:", modelo, precio, describe_lo_que_quieres, tengo_un_plano, tu_direccion_actual, indica_tu_presupuesto, tipo_de_persona)
 
         # 📌 Crear el contacto con los metacampos incluidos
         contact_data = {
@@ -83,13 +83,13 @@ def receive_webhook():
                 "firstname": first_name,
                 "lastname": last_name,
                 "phone": phone,
-                "custom_tipo_de_persona": persona,
-                "custom_indica_tu_presupuesto": presupuesto,
-                "custom_tu_direccin_actual": direccion,
-                "custom_tengo_un_plano": plano,  # Si 'plano' es un archivo, asegúrate de enviar la URL del archivo
-                "custom_describe_lo_que_quieres": describe,
+                "custom_modelo": modelo,
                 "custom_precio": precio,
-                "custom_modelo": modelo
+                "custom_descripcion": describe_lo_que_quieres,
+                "custom_plano": tengo_un_plano,  # Si 'plano' es un archivo, asegúrate de enviar la URL del archivo
+                "custom_direccion": tu_direccion_actual,
+                "custom_presupuesto": indica_tu_presupuesto,
+                "custom_persona": tipo_de_persona
             }
         }
 
